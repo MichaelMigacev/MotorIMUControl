@@ -5,7 +5,9 @@
 #include <ESP32Servo.h>
 
 Adafruit_MPU6050 mpu;
-Servo myservo;
+Servo myservo_x;
+Servo myservo_y;
+Servo myservo_z;
 
 void setup(void)
 {
@@ -26,7 +28,9 @@ void setup(void)
   }
   Serial.println("MPU6050 Found!");
 
-  myservo.attach(12, 500, 2500);
+  myservo_x.attach(12, 500, 2500);
+  myservo_y.attach(13, 500, 2500);
+  myservo_z.attach(14, 500, 2500);
 
   mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
   Serial.print("Accelerometer range set to: ");
@@ -106,8 +110,26 @@ void loop()
     accelX = -10;
   if (accelX > 10)
     accelX = 10;
-  int servoAngle = round((accelX + 10) * 180.0 / 20.0);
-  myservo.write(servoAngle);
+  int servoAngle_x = round((accelX + 10) * 180.0 / 20.0);
+  myservo_x.write(servoAngle_x);
+
+  // Map acceleration.x from -10 to 10 to servo angle 0 to 180
+  float accelY = a.acceleration.y;
+  if (accelY < -10)
+    accelY = -10;
+  if (accelY > 10)
+    accelY = 10;
+  int servoAngle_y = round((accelY + 10) * 180.0 / 20.0);
+  myservo_y.write(servoAngle_y);
+
+  // Map acceleration.z from -10 to 10 to servo angle 0 to 180
+  float accelZ = a.acceleration.z;
+  if (accelZ < -10)
+    accelZ = -10;
+  if (accelZ > 10)
+    accelZ = 10;
+  int servoAngle_z = round((accelZ + 10) * 180.0 / 20.0);
+  myservo_z.write(servoAngle_z);
 
   /* Print out the values */
   Serial.print("Acceleration X: ");
@@ -118,8 +140,12 @@ void loop()
   Serial.print(a.acceleration.z);
   Serial.println(" m/s^2");
 
-  Serial.print("Servo Angle: ");
-  Serial.println(servoAngle);
+  Serial.print("Servo Angle X: ");
+  Serial.println(servoAngle_x);
+  Serial.print("Servo Angle Y: ");
+  Serial.println(servoAngle_y);
+  Serial.print("Servo Angle Z: ");
+  Serial.println(servoAngle_z);
 
   Serial.print("Rotation X: ");
   Serial.print(g.gyro.x);
